@@ -7,7 +7,8 @@ import utils.Global
 import scala.concurrent.Future
 import play.api.libs.json.{JsString, Json, JsValue}
 
-object StockSentiment extends Controller {
+//TODO remove play references
+object StockSentiment  {
 
   def getTextSentiment(text: String): Future[Response] = WS.url(Global.sentimentUrl) post Map("text" -> Seq(text))
   
