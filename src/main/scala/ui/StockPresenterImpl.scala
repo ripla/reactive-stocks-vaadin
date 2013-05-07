@@ -21,7 +21,7 @@ class StockPresenterImpl(uuid: String) extends StockPresenter with TypedActor.Re
 
   var stocks: Map[String, ActorRef] = Map.empty[String, ActorRef]
 
-  override val view: StockView = new StockView
+  override val view: StockView = new StockView(this)
 
   override def onReceive(message: Any, sender: ActorRef): Unit = message match {
 
