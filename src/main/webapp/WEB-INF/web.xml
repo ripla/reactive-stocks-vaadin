@@ -19,14 +19,20 @@
 			<param-name>ScaladinUI</param-name>
 			<param-value>ui.StockUI</param-value>
 		</init-param>
+		<init-param>
+			<description>
+  		Application widgetset</description>
+			<param-name>widgetset</param-name>
+			<param-value>ui.Widgetset</param-value>
+		</init-param>
 		<async-supported>true</async-supported>
 	</servlet>
-	
+
 	<servlet-mapping>
 		<servlet-name>Reactive stocks demo</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>Reactive stocks demo</servlet-name>
 		<url-pattern>/VAADIN/*</url-pattern>

@@ -14,7 +14,6 @@ object ApplicationBuild extends Build {
     "com.typesafe.akka" %% "akka-slf4j" % "2.1.2",
     "com.vaadin" % "vaadin-server" % appVaadinVersion,
     "com.vaadin" % "vaadin-push" % appVaadinVersion,
-    "com.vaadin" % "vaadin-client-compiled" % appVaadinVersion,
     "com.vaadin" % "vaadin-themes" % appVaadinVersion,
     "vaadin.scala" %% "scaladin" % "3.0.0-SNAPSHOT",
     "javax.servlet" % "javax.servlet-api" % "3.0.1",
