@@ -15,6 +15,7 @@ object Global {
   val configuration = ConfigFactory.load();
   val sentimentUrl = configuration.getString("sentiment.url")
   val tweetUrl = configuration.getString("tweet.url")
+  val updateFrequency = configuration.getLong("updatefrequency.ms")
 
   val system = ActorSystem("reactive-stocks")
   val usersActor = system.actorOf(Props[UsersActor], "users")
@@ -23,5 +24,5 @@ object Global {
   import system.dispatcher
 
   // fetch a new data point once every second
-  system.scheduler.schedule(Zero, 50 millis, stockHolderActor, FetchLatest.instance);
+  system.scheduler.schedule(Zero, updateFrequency millis, stockHolderActor, FetchLatest.instance);
 }

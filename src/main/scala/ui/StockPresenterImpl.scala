@@ -37,8 +37,10 @@ class StockPresenterImpl(uuid: String) extends StockPresenter with TypedActor.Re
 
         // send the whole history to the client
         (stockActorRef ? FetchHistory).mapTo[Seq[Number]].foreach { history =>
+          val startTime = System.currentTimeMillis() - (history.size * Global.updateFrequency)
+          val values = history.map(_.doubleValue).zipWithIndex map { case (value, index) => (index * Global.updateFrequency + startTime, value) }
 
-          view.watchStock(symbol, history map (_.doubleValue))
+          view.watchStock(symbol, values)
         }
       }
 
