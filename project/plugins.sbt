@@ -4,6 +4,10 @@ logLevel := Level.Warn
 // The Typesafe repository 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
-resolvers += "Web plugin repo" at "http://siasia.github.com/maven2"  
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.4.2")
 
-libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin" % "0.12.0-0.2.11.1")
+resolvers += "sbt-vaadin-plugin repo" at "http://henrikerola.github.io/repository/snapshots"
+
+addSbtPlugin("org.vaadin.sbt" % "sbt-vaadin-plugin" % "0.1-SNAPSHOT")
+
+addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.3.0")

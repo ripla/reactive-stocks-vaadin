@@ -16,48 +16,68 @@ import utils.Global
 import actors.SetupStock
 import actors.FetchHistory
 import scala.concurrent.Future
+import actors.GetSentiment
+import scala.util.Success
+import scala.util.Failure
+import akka.event.LoggingReceive
+import akka.event.Logging
+import scala.collection.mutable.ArrayBuffer
+import actors.Sentiment
 
 class StockPresenterImpl(uuid: String) extends StockPresenter with TypedActor.Receiver {
 
-  var stocks: Map[String, ActorRef] = Map.empty[String, ActorRef]
+  val stocks: ArrayBuffer[String] = ArrayBuffer.empty
 
-  override val view: StockView = new StockView(this)
+  override val view: StockView = new StockView(TypedActor.self[StockPresenter])
+
+  val log = Logging(TypedActor.context.system, TypedActor.context.self)
 
   override def onReceive(message: Any, sender: ActorRef): Unit = message match {
 
     case StockUpdate(symbol, price) =>
       if (stocks.contains(symbol)) {
         view.updateStock(symbol, price.doubleValue)
+      } else {
+        log.debug(s"Received update for unknown symbol: $symbol")
       }
+  }
 
-    case WatchStock(uuid: String, symbol: String) =>
-      implicit val timeout = Timeout(15 seconds)
-      (Global.stockHolderActor ? SetupStock(symbol)).mapTo[ActorRef].foreach { stockActorRef =>
-        stocks = stocks + (symbol -> stockActorRef)
+  def watch(symbol: String): Unit = {
+    log.debug(s"Received WatchStock with symbol: $symbol")
+    stocks += symbol
 
-        // send the whole history to the client
-        (stockActorRef ? FetchHistory).mapTo[Seq[Number]].foreach { history =>
-          val startTime = System.currentTimeMillis() - (history.size * Global.updateFrequency)
-          val values = history.map(_.doubleValue).zipWithIndex map { case (value, index) => (index * Global.updateFrequency + startTime, value) }
+    implicit val timeout = Timeout(15 seconds)
+    (Global.stockHolderActor ? SetupStock(symbol)).mapTo[ActorRef].foreach { stockActorRef =>
 
-          view.watchStock(symbol, values)
-        }
+      // send the whole history to the client
+      (stockActorRef ? FetchHistory).mapTo[Seq[Number]].foreach { history =>
+        val startTime = System.currentTimeMillis() - (history.size * Global.updateFrequency)
+        val values = history.map(_.doubleValue).zipWithIndex map { case (value, index) => (index * Global.updateFrequency + startTime, value) }
+
+        log.debug(s"Received WatchStock with symbol: $symbol")
+        view.watchStock(symbol, values)
       }
-
-    case UnwatchStock(uuid: String, symbol: String) =>
-      if (stocks.contains(symbol))
-        stocks = stocks - symbol
+    }
   }
 
-  def watch(symbol: String) {
-    Global.usersActor ! WatchStock(uuid, symbol)
+  def unwatch(symbol: String): Unit = {
+    log.debug(s"Received UnwatchStock with symbol: $symbol")
+    if (stocks.contains(symbol))
+      stocks -= symbol
   }
 
-  def unwatch(symbol: String) {
-    Global.usersActor ! UnwatchStock(uuid, symbol)
+  def chartClicked(symbol: String): Unit = {
+    view.showFetchingSentiment(symbol)
+    getSentiment(symbol) onComplete (result => result match {
+      case Success(result) => view.showStockSentiment(symbol, result)
+      case Failure(exception) => exception.printStackTrace()
+    })
   }
 
-  //TODO migrate StockSentiment.scala from play
-  def getSentiment(symbol: String): Future[SentimentResult] = Future.successful(Positive)
+  def getSentiment(symbol: String): Future[Sentiment] = {
+    log.debug(s"Received GetSentiment with symbol: $symbol")
+    implicit val actorTimeout = Timeout(10 seconds)
+    (Global.sentimentActor ? GetSentiment(symbol)).mapTo[Sentiment]
+  }
 
 }

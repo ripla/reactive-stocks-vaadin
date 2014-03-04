@@ -1,12 +1,15 @@
 package ui
 
-import com.vaadin.server.VaadinServlet
-import javax.servlet.annotation.WebServlet
-import javax.servlet.annotation.WebInitParam
+import scala.concurrent.duration._
 
-//TODO
-//@WebServlet(asyncSupported = true, urlPatterns = Array("/*"), initParams = Array( new WebInitParam(name = "UI", value = "ui.StockUI"),
-//        new WebInitParam(name = "pushmode", value = "automatic") ))
-class StockServlet extends VaadinServlet {
+import utils.Global
+import vaadin.scala._
+import vaadin.scala.server.ScaladinServlet
 
+class StockServlet extends ScaladinServlet {
+  
+  override def destroy = {
+    Global.system.shutdown()
+    Global.system.awaitTermination(5 seconds)
+ }
 }

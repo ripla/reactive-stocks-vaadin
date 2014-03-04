@@ -17,3 +17,4 @@ dist
 bin
 .cache
 src/main/webapp/VAADIN/widgetsets
+src/main/webapp/VAADIN/gwt-unitCache

@@ -7,4 +7,8 @@
 		value="false" />
 	<inherits name="com.vaadin.addon.charts.Widgetset" />
 
+    <set-property name="user.agent" value="gecko1_8"/>
+
+
+    <inherits name="com.vaadin.addon.timeline.gwt.TimelineWidgetSet" />
 </module>

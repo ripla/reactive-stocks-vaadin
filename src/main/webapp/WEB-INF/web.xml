@@ -12,7 +12,7 @@
 	</context-param>
 	<servlet>
 		<servlet-name>Reactive stocks demo</servlet-name>
-		<servlet-class>vaadin.scala.ScaladinServlet</servlet-class>
+		<servlet-class>ui.StockServlet</servlet-class>
 		<init-param>
 			<description>
 			Vaadin application class to start</description>
@@ -20,10 +20,14 @@
 			<param-value>ui.StockUI</param-value>
 		</init-param>
 		<init-param>
-			<description>
-  		Application widgetset</description>
+			<description>Application widgetset</description>
 			<param-name>widgetset</param-name>
 			<param-value>ui.Widgetset</param-value>
+		</init-param>
+		<init-param>
+			<description>Heartbeat interval</description>
+			<param-name>heartbeatInterval</param-name>
+			<param-value>30</param-value>
 		</init-param>
 		<async-supported>true</async-supported>
 	</servlet>

@@ -4,11 +4,9 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSystem
 import akka.actor.Props
-import actors.UsersActor
-import actors.StockHolderActor
 import scala.concurrent.duration._
-import scala.concurrent.duration.Duration._
-import actors.FetchLatest
+
+import actors._
 
 object Global {
   
@@ -20,9 +18,10 @@ object Global {
   val system = ActorSystem("reactive-stocks")
   val usersActor = system.actorOf(Props[UsersActor], "users")
   val stockHolderActor = system.actorOf(Props[StockHolderActor], "stocks")
+  val sentimentActor = system.actorOf(Props[StockSentimentActor], "sentiments")
 
   import system.dispatcher
 
-  // fetch a new data point once every second
-  system.scheduler.schedule(Zero, updateFrequency millis, stockHolderActor, FetchLatest.instance);
+  // fetch a new data point at a given interval
+  system.scheduler.schedule(Duration.Zero, updateFrequency millis, stockHolderActor, FetchLatest.instance);
 }
